@@ -4,6 +4,8 @@ import { useState } from "react";
 import { ageInMonths, parseIsoDate, todayIso } from "@/lib/growth/age";
 import { assessGrowth, type IndicatorResult, type Measurement, type Sex } from "@/lib/growth";
 import type { Tone } from "@/lib/growth/classify";
+import { ageLabel, formatResultText } from "@/lib/format-result";
+import { copyText } from "@/lib/clipboard";
 
 const toneClass: Record<Tone, string> = {
   good: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
@@ -28,6 +30,7 @@ export function GrowthForm() {
   const [error, setError] = useState<string | null>(null);
   const [errorField, setErrorField] = useState<"dates" | "weight" | "height" | null>(null);
   const [result, setResult] = useState<{ ageMonths: number; items: IndicatorResult[] } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   function fail(field: "dates" | "weight" | "height", message: string) {
     setErrorField(field);
@@ -56,7 +59,14 @@ export function GrowthForm() {
     const months = ageInMonths(birthDate, measureDate);
     if (months < 0 || months > 60) return fail("dates", "Standar WHO pada aplikasi ini hanya mencakup usia 0–5 tahun (60 bulan).");
 
+    setCopied(false);
     setResult({ ageMonths: months, items: assessGrowth({ sex, ageMonths: months, weightKg, heightCm, measurement }) });
+  }
+
+  async function onCopy() {
+    if (!result) return;
+    await copyText(formatResultText({ ageMonths: result.ageMonths, sex, items: result.items }));
+    setCopied(true);
   }
 
   const input = "mt-1 w-full rounded-xl border border-border bg-card px-3 py-2.5 outline-none focus:border-accent";
@@ -158,10 +168,7 @@ export function GrowthForm() {
 
       {result && (
         <section aria-label="Hasil" className="space-y-3">
-          <h2 className="font-bold">
-            Hasil untuk usia {Math.floor(result.ageMonths / 12) > 0 && `${Math.floor(result.ageMonths / 12)} tahun `}
-            {result.ageMonths % 12} bulan
-          </h2>
+          <h2 className="font-bold">Hasil untuk usia {ageLabel(result.ageMonths)}</h2>
           {result.items.map((r) => (
             <article key={r.key} className="rounded-2xl border border-border bg-card p-4">
               <h3 className="text-sm text-muted">{r.name}</h3>
@@ -184,6 +191,13 @@ export function GrowthForm() {
               posyandu, dan bawa Buku KIA saat berkunjung.
             </p>
           )}
+          <button
+            type="button"
+            onClick={onCopy}
+            className="w-full rounded-full border border-border py-2.5 text-sm font-semibold"
+          >
+            {copied ? "Tersalin!" : "Salin hasil"}
+          </button>
         </section>
       )}
     </div>
