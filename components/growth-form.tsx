@@ -6,6 +6,7 @@ import { assessGrowth, type IndicatorResult, type Measurement, type Sex } from "
 import type { Tone } from "@/lib/growth/classify";
 import { ageLabel, formatResultText } from "@/lib/format-result";
 import { copyText } from "@/lib/clipboard";
+import { GrowthChart } from "@/components/growth-chart";
 
 const toneClass: Record<Tone, string> = {
   good: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
@@ -185,6 +186,7 @@ export function GrowthForm() {
               </p>
             </article>
           ))}
+          <GrowthChart sex={sex} ageMonths={result.ageMonths} items={result.items} />
           {result.items.some((r) => r.status.tone !== "good") && (
             <p className="rounded-xl bg-accent-soft p-3 text-sm">
               Ada hasil di luar kisaran normal. Ini bukan diagnosis. Konsultasikan dengan bidan, dokter, atau petugas
