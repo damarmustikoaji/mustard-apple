@@ -1,5 +1,7 @@
 export interface LmsRow {
-  month: number;
+  month?: number;
+  length?: number;
+  height?: number;
   L: number;
   M: number;
   S: number;
