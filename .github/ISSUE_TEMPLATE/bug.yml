@@ -1,0 +1,35 @@
+name: 🐞 Laporan bug
+description: Ada yang tidak berjalan sebagaimana mestinya
+labels: ["type:bug", "triage"]
+body:
+  - type: textarea
+    id: ringkasan
+    attributes:
+      label: Apa yang terjadi?
+      placeholder: Hasil cek berat badan anak saya tidak sesuai dengan yang di Buku KIA...
+    validations:
+      required: true
+  - type: textarea
+    id: langkah
+    attributes:
+      label: Langkah untuk mengulang
+      placeholder: |
+        1. Buka /cek-pertumbuhan
+        2. Isi ...
+        3. Klik "Cek sekarang"
+    validations:
+      required: true
+  - type: textarea
+    id: harapan
+    attributes:
+      label: Seharusnya bagaimana?
+    validations:
+      required: true
+  - type: input
+    id: perangkat
+    attributes:
+      label: Perangkat dan browser
+      placeholder: Android 13, Chrome
+  - type: markdown
+    attributes:
+      value: "⚠️ Jangan tuliskan nama atau data pribadi anak. Cukup angka yang diperlukan untuk mengulang masalah."

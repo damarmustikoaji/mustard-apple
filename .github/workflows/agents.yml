@@ -1,0 +1,65 @@
+# Memanggil agent cranberry berdasarkan label tahap di issue.
+# Aktifkan dengan repository variable CRANBERRY_ENABLED=true setelah secrets diisi.
+name: agents
+
+on:
+  issues:
+    types: [labeled]
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: Agent yang dijalankan
+        type: choice
+        options: [monitor, product-manager, system-analyst, developer, qa, devops]
+      issue:
+        description: Nomor issue (kosongkan untuk monitor)
+        required: false
+
+permissions:
+  contents: read
+  models: read
+
+jobs:
+  route:
+    if: vars.CRANBERRY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      agent: ${{ steps.pick.outputs.agent }}
+      issue: ${{ steps.pick.outputs.issue }}
+    steps:
+      - id: pick
+        env:
+          EVENT: ${{ github.event_name }}
+          LABEL: ${{ github.event.label.name }}
+          ISSUE: ${{ github.event.issue.number || inputs.issue }}
+          INPUT_AGENT: ${{ inputs.agent }}
+        run: |
+          case "$EVENT" in
+            schedule) agent=monitor ;;
+            workflow_dispatch) agent="$INPUT_AGENT" ;;
+            issues)
+              case "$LABEL" in
+                triage) agent=product-manager ;;
+                needs-analysis) agent=system-analyst ;;
+                ready-dev) agent=developer ;;
+                *) agent="" ;;
+              esac ;;
+          esac
+          echo "agent=$agent" >> "$GITHUB_OUTPUT"
+          echo "issue=$ISSUE" >> "$GITHUB_OUTPUT"
+          echo "Event $EVENT, label '${LABEL}' -> agent '${agent:-tidak ada}'"
+
+  run:
+    needs: route
+    if: needs.route.outputs.agent != ''
+    uses: damarmustikoaji/cranberry/.github/workflows/run-agent.yml@master
+    with:
+      agent: ${{ needs.route.outputs.agent }}
+      issue: ${{ needs.route.outputs.issue }}
+    secrets:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}

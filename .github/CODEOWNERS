@@ -1,0 +1,6 @@
+# Folder terkunci: perubahan wajib disetujui pemilik (aktifkan "Require review from Code Owners"
+# di branch protection master). Agent tidak boleh mengubah ini sendiri.
+/.github/           @damarmustikoaji
+/data/who/          @damarmustikoaji
+/content/medis/     @damarmustikoaji
+/tests/reference/   @damarmustikoaji

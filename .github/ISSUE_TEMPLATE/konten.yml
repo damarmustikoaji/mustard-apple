@@ -1,0 +1,29 @@
+name: 📚 Konten panduan
+description: Usulan atau koreksi isi panduan kesehatan ibu dan anak
+labels: ["type:content", "medical-review", "triage"]
+body:
+  - type: input
+    id: topik
+    attributes:
+      label: Topik
+      placeholder: Tanda bahaya pada bayi baru lahir
+    validations:
+      required: true
+  - type: dropdown
+    id: tahap
+    attributes:
+      label: Tahap
+      options: [Kehamilan, Persalinan, Nifas, Bayi baru lahir, "Bayi 0-12 bulan", "Anak 1-5 tahun"]
+    validations:
+      required: true
+  - type: textarea
+    id: sumber
+    attributes:
+      label: Sumber rujukan (wajib)
+      description: Halaman Buku KIA, pedoman Kemenkes, WHO, atau IDAI. Konten tanpa sumber tidak akan dikerjakan.
+    validations:
+      required: true
+  - type: textarea
+    id: isi
+    attributes:
+      label: Isi atau koreksi yang diusulkan

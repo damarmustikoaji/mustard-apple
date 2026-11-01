@@ -1,0 +1,67 @@
+# Jalankan manual dari tab Actions:
+#  - labels: membuat/memperbarui semua label dari .github/labels.json
+#  - seed-issues: membuat issue uji coba dari .github/seed-issues/*.md
+# Pakai secret BOT_TOKEN bila ada, supaya issue yang dibuat memicu workflow agents.
+name: setup-repo
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        type: choice
+        options: [labels, seed-issues]
+  push:
+    branches: [master]
+    paths: [.github/labels.json]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  labels:
+    if: github.event_name == 'push' || inputs.task == 'labels'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = require('./.github/labels.json');
+            const { owner, repo } = context.repo;
+            const existing = await github.paginate(github.rest.issues.listLabelsForRepo, { owner, repo, per_page: 100 });
+            const names = new Set(existing.map((l) => l.name));
+            for (const l of labels) {
+              if (names.has(l.name)) {
+                await github.rest.issues.updateLabel({ owner, repo, name: l.name, color: l.color, description: l.description });
+              } else {
+                await github.rest.issues.createLabel({ owner, repo, ...l });
+              }
+              core.info(`label ${l.name}`);
+            }
+
+  seed-issues:
+    if: inputs.task == 'seed-issues'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.BOT_TOKEN || github.token }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const dir = '.github/seed-issues';
+            const { owner, repo } = context.repo;
+            for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.md')).sort()) {
+              const raw = fs.readFileSync(path.join(dir, file), 'utf8');
+              const [, head, body] = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+              const title = head.match(/^title:\s*(.+)$/m)[1].trim();
+              const labels = head.match(/^labels:\s*(.+)$/m)[1].split(',').map((s) => s.trim());
+              const { data: found } = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${owner}/${repo} is:issue in:title "${title.replace(/"/g, '')}"`,
+              });
+              if (found.total_count > 0) { core.info(`lewati (sudah ada): ${title}`); continue; }
+              const { data } = await github.rest.issues.create({ owner, repo, title, body: body.trim(), labels });
+              core.info(`#${data.number} ${title}`);
+            }

@@ -1,0 +1,25 @@
+[
+  { "name": "triage", "color": "ededed", "description": "Tahap 1: menunggu Product Manager" },
+  { "name": "needs-analysis", "color": "c5def5", "description": "Tahap 2: menunggu System Analyst" },
+  { "name": "ready-dev", "color": "bfd4f2", "description": "Tahap 3: siap dikerjakan Developer" },
+  { "name": "in-progress", "color": "fbca04", "description": "Tahap 4: sedang dikerjakan" },
+  { "name": "in-review", "color": "f9d0c4", "description": "Tahap 5: PR menunggu QA" },
+  { "name": "ready-deploy", "color": "c2e0c6", "description": "Tahap 6: siap dirilis DevOps" },
+  { "name": "done", "color": "0e8a16", "description": "Selesai dan sudah dirilis" },
+  { "name": "needs-human", "color": "b60205", "description": "Agent berhenti, butuh keputusan manusia" },
+
+  { "name": "type:bug", "color": "d73a4a", "description": "Ada yang tidak berjalan semestinya" },
+  { "name": "type:feature", "color": "a2eeef", "description": "Fitur baru" },
+  { "name": "type:content", "color": "d4c5f9", "description": "Isi panduan kesehatan" },
+  { "name": "type:error", "color": "e11d21", "description": "Dibuat otomatis oleh agent Monitor" },
+  { "name": "type:chore", "color": "cfd3d7", "description": "Perawatan, dependency, tooling" },
+
+  { "name": "P0", "color": "b60205", "description": "Aplikasi tidak bisa dipakai / hasil medis salah" },
+  { "name": "P1", "color": "d93f0b", "description": "Fitur utama terganggu" },
+  { "name": "P2", "color": "fbca04", "description": "Gangguan kecil / fitur bernilai jelas" },
+  { "name": "P3", "color": "c5def5", "description": "Kosmetik / belum mendesak" },
+
+  { "name": "medical-review", "color": "e99695", "description": "Menyentuh data WHO atau konten medis: wajib ditinjau manusia" },
+  { "name": "area:agent", "color": "5319e7", "description": "Pekerjaan untuk sistem agent (cranberry)" },
+  { "name": "good-first-task", "color": "7057ff", "description": "Cocok untuk uji coba agent" }
+]

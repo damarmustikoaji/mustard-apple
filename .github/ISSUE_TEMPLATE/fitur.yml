@@ -1,0 +1,22 @@
+name: ✨ Usulan fitur
+description: Ide untuk membuat Teman Buku Pink lebih bermanfaat
+labels: ["type:feature", "triage"]
+body:
+  - type: textarea
+    id: masalah
+    attributes:
+      label: Masalah apa yang ingin diselesaikan?
+      placeholder: Saya sulit membayangkan posisi berat anak saya dibanding anak lain seusianya...
+    validations:
+      required: true
+  - type: textarea
+    id: usulan
+    attributes:
+      label: Usulan solusi
+    validations:
+      required: true
+  - type: textarea
+    id: kriteria
+    attributes:
+      label: Kriteria penerimaan (opsional)
+      description: Agent Product Manager akan melengkapinya kalau kosong.
