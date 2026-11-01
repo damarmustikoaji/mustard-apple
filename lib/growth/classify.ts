@@ -20,3 +20,13 @@ export function classifyHeightForAge(z: number): Status {
   if (z <= 3) return { label: "Normal", tone: "good" };
   return { label: "Tinggi", tone: "info" };
 }
+
+/** Kategori BB/PB atau BB/TB menurut Permenkes No. 2 Tahun 2020. */
+export function classifyWeightForLengthHeight(z: number): Status {
+  if (z < -3) return { label: "Gizi buruk", tone: "danger" };
+  if (z < -2) return { label: "Gizi kurang", tone: "warning" };
+  if (z <= 1) return { label: "Gizi baik", tone: "good" };
+  if (z <= 2) return { label: "Berisiko gizi lebih", tone: "warning" };
+  if (z <= 3) return { label: "Gizi lebih", tone: "warning" };
+  return { label: "Obesitas", tone: "danger" };
+}

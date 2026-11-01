@@ -1,13 +1,20 @@
 import bbU from "@/data/who/bb-u.json";
 import pbU from "@/data/who/pb-u.json";
 import tbU from "@/data/who/tb-u.json";
-import { classifyHeightForAge, classifyWeightForAge, type Status } from "./classify";
+import bbPb from "@/data/who/bb-pb.json";
+import bbTb from "@/data/who/bb-tb.json";
+import { classifyHeightForAge, classifyWeightForAge, classifyWeightForLengthHeight, type Status } from "./classify";
 import { lmsZ, round2, valueAtZ, weightZ, type LmsRow } from "./zscore";
 
 export type Sex = "male" | "female";
 export type Measurement = "lying" | "standing";
 
 interface Table {
+  male: LmsRow[];
+  female: LmsRow[];
+}
+
+interface WeightForLengthHeightTable {
   male: LmsRow[];
   female: LmsRow[];
 }
@@ -21,7 +28,7 @@ export interface GrowthInput {
 }
 
 export interface IndicatorResult {
-  key: "bb-u" | "pb-u" | "tb-u";
+  key: "bb-u" | "pb-u" | "tb-u" | "bb-pb" | "bb-tb";
   name: string;
   value: number;
   unit: string;
@@ -73,6 +80,23 @@ export function assessGrowth(input: GrowthInput): IndicatorResult[] {
       z: hz,
       status: classifyHeightForAge(hz),
       normalRange: { min: oneDecimal(valueAtZ(h, -2)), max: oneDecimal(valueAtZ(h, 3)) },
+    });
+
+    const indicator = (useLength ? bbPb : bbTb) as WeightForLengthHeightTable;
+    const dimension = Math.round(height * 2) / 2;
+    const row = indicator[sex].find((r) => (useLength ? r.length : r.height) === dimension);
+    if (!row) {
+      throw new RangeError(`Tidak ada tabel WHO BB/${useLength ? "PB" : "TB"} untuk ${dimension} cm.`);
+    }
+    const z = round2(weightZ(weightKg, row));
+    results.push({
+      key: useLength ? "bb-pb" : "bb-tb",
+      name: useLength ? "Berat badan menurut panjang badan (BB/PB)" : "Berat badan menurut tinggi badan (BB/TB)",
+      value: weightKg,
+      unit: "kg",
+      z,
+      status: classifyWeightForLengthHeight(z),
+      normalRange: { min: oneDecimal(valueAtZ(row, -2)), max: oneDecimal(valueAtZ(row, 1)) },
     });
   }
 

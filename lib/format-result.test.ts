@@ -22,6 +22,7 @@ describe("formatResultText", () => {
     expect(text).toContain("Usia: 1 tahun 0 bulan, perempuan");
     expect(text).toContain("BB/U: 7,5 kg,");
     expect(text).toContain("PB/U: 72 cm,");
+    expect(text).toContain("BB/PB: 7,5 kg,");
     expect(text.endsWith("Ini bukan diagnosis. Konsultasikan ke tenaga kesehatan.")).toBe(true);
     expect(text).not.toMatch(/\d{4}-\d{2}-\d{2}/);
   });
