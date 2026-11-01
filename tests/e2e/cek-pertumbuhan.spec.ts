@@ -22,6 +22,28 @@ test("menghitung status anak dengan berat dan panjang normal", async ({ page }) 
   await expect(hasil.getByText("Normal", { exact: true })).toBeVisible();
 });
 
+test("tombol salin hasil menyalin teks ringkas tanpa tanggal lahir", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/cek-pertumbuhan");
+  await page.getByText("Perempuan").click();
+  await page.getByLabel("Tanggal lahir").fill("2025-01-10");
+  await page.getByLabel("Tanggal pengukuran").fill("2026-01-10");
+  await page.getByLabel("Berat badan (kg)").fill("7,5");
+  await page.getByLabel(/Panjang\/tinggi/).fill("72");
+  await page.getByRole("button", { name: "Cek sekarang" }).click();
+
+  const hasil = page.getByRole("region", { name: "Hasil" });
+  await hasil.getByRole("button", { name: "Salin hasil" }).click();
+  await expect(hasil.getByRole("button", { name: "Tersalin!" })).toBeVisible();
+
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toContain("Hasil cek pertumbuhan (Teman Buku Pink)");
+  expect(copied).toContain("Usia: 1 tahun 0 bulan, perempuan");
+  expect(copied).toContain("BB/U: 7,5 kg,");
+  expect(copied).toContain("Ini bukan diagnosis. Konsultasikan ke tenaga kesehatan.");
+  expect(copied).not.toContain("2025-01-10");
+});
+
 test("menolak tanggal lahir setelah tanggal pengukuran", async ({ page }) => {
   await page.goto("/cek-pertumbuhan");
   await page.getByLabel("Tanggal lahir").fill("2026-02-01");
