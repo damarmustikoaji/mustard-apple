@@ -24,6 +24,26 @@ npm test             # unit test + test acuan WHO
 npm run build && npm run test:e2e
 ```
 
+## Analytics produk (GA4)
+
+Pengiriman analytics mati secara default. Salin `.env.example` untuk konfigurasi lokal; analytics tetap tidak berjalan
+di development/test/preview. Pada environment Production Vercel, pengelola harus mengisi
+`NEXT_PUBLIC_GA_MEASUREMENT_ID` dan secara terpisah mengatur `NEXT_PUBLIC_GA_ENABLED=true` setelah
+pemberitahuan/kebijakan privasi ditinjau dan diperbarui untuk GA4.
+Persetujuan pengunjung diminta sebelum script Google dimuat dan dapat diubah melalui halaman `/privasi`.
+
+Sebelum mengaktifkan flag production, nonaktifkan **Enhanced measurement** pada web stream GA4, termasuk page views
+berbasis perubahan riwayat browser serta event scroll dan form, lalu verifikasi payload yang diterima. Kode mematikan
+pageview otomatis GA dengan `send_page_view: false` serta mengirim URL dan referrer generik pada origin situs dan judul
+“Teman Buku Pink” yang sama untuk setiap route. Path, query, fragment, judul aktual, input, dan data kesehatan tidak
+menjadi parameter pageview. Tidak ada event fitur atau ID buatan aplikasi. GA4 dapat tetap mengumpulkan metadata teknis
+(termasuk bahasa dan resolusi layar), pengenal browser/sesi bawaan, serta event otomatis GA4 (misalnya kunjungan
+pertama, sesi, dan engagement). GA4 juga dapat menggunakan cookie; implementasi ini tidak menyatakan analytics anonim
+atau bebas cookie. Persetujuan dapat ditolak atau diubah melalui `/privasi`.
+
+Laporan hanya mendukung hitungan kunjungan agregat situs, bukan tren penggunaan fitur. Bila prasyarat kebijakan atau
+pengaturan properti belum dipenuhi, biarkan `NEXT_PUBLIC_GA_ENABLED` tidak disetel atau `false`.
+
 ## Struktur
 
 | Folder | Isi |
