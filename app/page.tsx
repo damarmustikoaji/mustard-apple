@@ -4,7 +4,7 @@ const features = [
   { title: "Cek Pertumbuhan", desc: "Berat dan tinggi anak sesuai usianya, berdasarkan standar WHO.", href: "/cek-pertumbuhan" },
   { title: "Cek Perkembangan", desc: "Kemampuan yang biasanya sudah dicapai anak di setiap usia.", href: "/cek-perkembangan" },
   { title: "Jadwal Imunisasi", desc: "Imunisasi apa saja dan kapan, dihitung dari tanggal lahir.", href: "/jadwal-imunisasi" },
-  { title: "Panduan", desc: "Kehamilan, nifas, MPASI, dan tanda bahaya yang perlu diwaspadai." },
+  { title: "Panduan tanda bahaya", desc: "Langkah mencari bantuan untuk kehamilan, nifas, dan bayi atau anak.", href: "/panduan-tanda-bahaya" },
 ];
 
 export default function Home() {
@@ -32,14 +32,7 @@ export default function Home() {
               <h2 className="font-semibold">{f.title}</h2>
               <p className="text-sm text-muted">{f.desc}</p>
             </Link>
-          ) : (
-            <div key={f.title} className="rounded-2xl border border-dashed border-border p-4 opacity-70">
-              <h2 className="font-semibold">
-                {f.title} <span className="ml-1 rounded-full bg-accent-soft px-2 py-0.5 text-xs text-accent">segera</span>
-              </h2>
-              <p className="text-sm text-muted">{f.desc}</p>
-            </div>
-          ),
+          ) : null,
         )}
       </section>
     </div>
