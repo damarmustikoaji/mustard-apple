@@ -7,6 +7,8 @@ import type { Tone } from "@/lib/growth/classify";
 import { ageLabel, formatResultText } from "@/lib/format-result";
 import { copyText } from "@/lib/clipboard";
 import { GrowthChart } from "@/components/growth-chart";
+import { readGrowthHistory, writeGrowthHistory, type SavedChild } from "@/lib/growth/history";
+import { GrowthHistory } from "@/components/growth-history";
 
 const toneClass: Record<Tone, string> = {
   good: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
@@ -32,6 +34,16 @@ export function GrowthForm() {
   const [errorField, setErrorField] = useState<"dates" | "weight" | "height" | null>(null);
   const [result, setResult] = useState<{ ageMonths: number; items: IndicatorResult[] } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  function saveMeasurement() {
+    const children = readGrowthHistory();
+    const existing = children.find((child) => child.birthDate === birthDate && child.sex === sex);
+    const child: SavedChild = existing ?? { id: crypto.randomUUID(), nickname: window.prompt("Nama panggilan anak (opsional)") ?? "", sex, birthDate, measurements: [] };
+    const nextChild = { ...child, measurements: [...child.measurements.filter((item) => item.date !== measureDate), { id: crypto.randomUUID(), date: measureDate, weightKg: parseNumber(weight), heightCm: height.trim() ? parseNumber(height) : undefined, measurement }] };
+    writeGrowthHistory(existing ? children.map((item) => item.id === child.id ? nextChild : item) : [...children, nextChild]);
+    setSaved(true);
+  }
 
   function fail(field: "dates" | "weight" | "height", message: string) {
     setErrorField(field);
@@ -61,6 +73,7 @@ export function GrowthForm() {
     if (months < 0 || months > 60) return fail("dates", "Standar WHO pada aplikasi ini hanya mencakup usia 0–5 tahun (60 bulan).");
 
     setCopied(false);
+    setSaved(false);
     setResult({ ageMonths: months, items: assessGrowth({ sex, ageMonths: months, weightKg, heightCm, measurement }) });
   }
 
@@ -187,6 +200,9 @@ export function GrowthForm() {
             </article>
           ))}
           <GrowthChart sex={sex} ageMonths={result.ageMonths} items={result.items} />
+          <button type="button" onClick={saveMeasurement} className="min-h-11 w-full rounded-full border border-accent px-4 py-2.5 font-semibold text-accent">
+            {saved ? "Tersimpan di riwayat" : "Simpan ke riwayat di HP ini"}
+          </button>
           {result.items.some((r) => r.status.tone !== "good") && (
             <p className="rounded-xl bg-accent-soft p-3 text-sm">
               Ada hasil di luar kisaran normal. Ini bukan diagnosis. Konsultasikan dengan bidan, dokter, atau petugas
@@ -202,6 +218,7 @@ export function GrowthForm() {
           </button>
         </section>
       )}
+      <GrowthHistory />
     </div>
   );
 }
