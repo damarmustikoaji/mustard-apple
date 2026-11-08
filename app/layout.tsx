@@ -36,10 +36,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </Link>
           </header>
           <main className="flex-1 pb-10">{children}</main>
-          <footer className="border-t border-border py-6 text-xs leading-relaxed text-muted">
+          <footer className="border-t border-border py-6 text-sm leading-relaxed text-muted">
             Teman Buku Pink adalah panduan pendamping Buku KIA, <strong>bukan aplikasi resmi Kemenkes</strong>. Informasi
             di sini bersifat umum dan tidak menggantikan pemeriksaan tenaga kesehatan. Bawa selalu Buku KIA saat ke
-            posyandu atau fasilitas kesehatan.
+            posyandu atau fasilitas kesehatan. Khawatir dengan kondisi ibu atau anak? Lihat halaman tanda bahaya di Buku
+            KIA Anda, atau segera hubungi 119 / puskesmas terdekat.
           </footer>
         </div>
       </body>
