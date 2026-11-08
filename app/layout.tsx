@@ -1,10 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ErrorLoggerInit } from "@/components/error-logger-init";
 import { ProductAnalytics } from "@/components/product-analytics";
 import { PwaRuntime } from "@/components/pwa-runtime";
+import { ThemeToggle } from "@/components/theme-toggle";
 import "./globals.css";
+
+const themeInitScript = `
+try {
+  var t = localStorage.getItem("theme");
+  if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+} catch (e) {}
+`;
 
 const jakarta = Plus_Jakarta_Sans({ variable: "--font-jakarta", subsets: ["latin"] });
 const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -24,7 +34,10 @@ export const viewport: Viewport = { width: "device-width", initialScale: 1, them
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id">
+    <html lang="id" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className={`${jakarta.variable} font-sans antialiased`}>
         <ErrorLoggerInit />
         <ProductAnalytics enabled={productAnalyticsEnabled} measurementId={gaMeasurementId} />
@@ -37,6 +50,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               </span>
               Teman Buku Pink
             </Link>
+            <ThemeToggle />
           </header>
           <main className="flex-1 pb-10">{children}</main>
           <footer className="border-t border-border py-6 text-sm leading-relaxed text-muted">
@@ -46,6 +60,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             KIA Anda, atau segera hubungi 119 / puskesmas terdekat.
           </footer>
         </div>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
