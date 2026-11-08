@@ -5,10 +5,12 @@ test("beranda menampilkan tiga fitur dan rujukan Buku KIA pada layar ponsel", as
   await page.goto("/");
 
   const features = page.getByRole("region", { name: "Fitur" });
-  await expect(features.getByRole("link")).toHaveCount(3);
+  await expect(features.getByRole("link")).toHaveCount(5);
+  await expect(features.getByRole("link", { name: /Kalkulator HPL/ })).toBeVisible();
   await expect(features.getByRole("link", { name: /Cek Pertumbuhan/ })).toBeVisible();
   await expect(features.getByRole("link", { name: /Cek Perkembangan/ })).toBeVisible();
   await expect(features.getByRole("link", { name: /Jadwal Imunisasi/ })).toBeVisible();
+  await expect(features.getByRole("link", { name: /Resep MPASI/ })).toBeVisible();
   await expect(features.getByText(/Panduan tanda bahaya/i)).toHaveCount(0);
   await expect(
     page.getByText(
