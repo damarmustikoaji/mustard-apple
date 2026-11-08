@@ -1,24 +1,24 @@
 import { expect, test } from "@playwright/test";
 
-test("alur tanpa materi medis menyediakan akses cepat dan status belum tersedia", async ({ page }) => {
+test("beranda menampilkan tiga fitur dan rujukan Buku KIA pada layar ponsel", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/");
+
+  const features = page.getByRole("region", { name: "Fitur" });
+  await expect(features.getByRole("link")).toHaveCount(3);
+  await expect(features.getByRole("link", { name: /Cek Pertumbuhan/ })).toBeVisible();
+  await expect(features.getByRole("link", { name: /Cek Perkembangan/ })).toBeVisible();
+  await expect(features.getByRole("link", { name: /Jadwal Imunisasi/ })).toBeVisible();
+  await expect(features.getByText(/Panduan tanda bahaya/i)).toHaveCount(0);
+  await expect(
+    page.getByText(
+      "Khawatir dengan kondisi ibu atau anak? Lihat halaman tanda bahaya di Buku KIA Anda, atau segera hubungi 119 / puskesmas terdekat.",
+    ),
+  ).toBeVisible();
+});
+
+test("route panduan tanda bahaya mengarah kembali ke beranda saat fitur nonaktif", async ({ page }) => {
   await page.goto("/panduan-tanda-bahaya");
-  await expect(page.getByRole("heading", { name: "Butuh mencari pertolongan segera?" })).toBeVisible();
-  await expect(page.getByText(/bukan diagnosis, bukan aplikasi resmi Kemenkes/).first()).toBeVisible();
-
-  const requests: string[] = [];
-  page.on("request", (request) => requests.push(request.url()));
-  for (const context of ["Kehamilan", "Masa nifas", "Bayi atau anak"]) {
-    const contextButton = page.getByRole("button", { name: new RegExp(context) });
-    await expect(contextButton).toHaveAttribute("aria-pressed", "false");
-    await contextButton.focus();
-    await page.keyboard.press("Enter");
-    await expect(contextButton).toHaveAttribute("aria-pressed", "true");
-    await expect(contextButton).toHaveCSS("min-height", "56px");
-    await expect(page.getByRole("heading", { name: `Panduan ${context.toLowerCase()} belum tersedia` })).toBeVisible();
-    await expect(page.getByText(/tidak menampilkan pertanyaan skrining atau arahan klinis/)).toBeVisible();
-  }
-
-  expect(requests.filter((url) => new URL(url).pathname.startsWith("/api/"))).toEqual([]);
-  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
-  expect(await page.evaluate(() => Object.keys(sessionStorage))).toEqual([]);
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { name: "Panduan tanda bahaya" })).toHaveCount(0);
 });
