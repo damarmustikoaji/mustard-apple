@@ -8,7 +8,12 @@ test("alur tanpa materi medis menyediakan akses cepat dan status belum tersedia"
   const requests: string[] = [];
   page.on("request", (request) => requests.push(request.url()));
   for (const context of ["Kehamilan", "Masa nifas", "Bayi atau anak"]) {
-    await page.getByRole("button", { name: new RegExp(context) }).click();
+    const contextButton = page.getByRole("button", { name: new RegExp(context) });
+    await expect(contextButton).toHaveAttribute("aria-pressed", "false");
+    await contextButton.focus();
+    await page.keyboard.press("Enter");
+    await expect(contextButton).toHaveAttribute("aria-pressed", "true");
+    await expect(contextButton).toHaveCSS("min-height", "56px");
     await expect(page.getByRole("heading", { name: `Panduan ${context.toLowerCase()} belum tersedia` })).toBeVisible();
     await expect(page.getByText(/tidak menampilkan pertanyaan skrining atau arahan klinis/)).toBeVisible();
   }

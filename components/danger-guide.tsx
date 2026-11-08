@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { dangerGuideContexts, getApprovedDangerGuide, type DangerGuideContext } from "@/lib/danger-guide";
 
-const groups = [
-  { id: "kehamilan", title: "Kehamilan", description: "Saya sedang hamil" },
-  { id: "nifas", title: "Masa nifas", description: "Saya dalam masa setelah melahirkan" },
-  { id: "anak", title: "Bayi atau anak", description: "Saya mencari bantuan untuk bayi atau anak" },
-] as const;
+const groups: { id: DangerGuideContext; title: string; description: string }[] = [
+  { id: dangerGuideContexts[0], title: "Kehamilan", description: "Saya sedang hamil" },
+  { id: dangerGuideContexts[1], title: "Masa nifas", description: "Saya dalam masa setelah melahirkan" },
+  { id: dangerGuideContexts[2], title: "Bayi atau anak", description: "Saya mencari bantuan untuk bayi atau anak" },
+];
 
 const disclaimer = "Panduan ini bukan diagnosis, bukan aplikasi resmi Kemenkes, dan tidak menggantikan pemeriksaan tenaga kesehatan.";
 
 export function DangerGuide() {
   const [selected, setSelected] = useState<string | null>(null);
   const selectedGroup = groups.find((group) => group.id === selected);
+  const approvedGuide = selectedGroup ? getApprovedDangerGuide(selectedGroup.id) : undefined;
 
   return (
     <div className="space-y-6 pt-4">
@@ -54,11 +56,30 @@ export function DangerGuide() {
       </section>
 
       <section id="konten-belum-tersedia" aria-live="polite" aria-atomic="true" className="scroll-mt-4 rounded-2xl border border-border bg-card p-4">
-        <h2 className="font-bold">{selectedGroup ? `Panduan ${selectedGroup.title.toLowerCase()} belum tersedia` : "Panduan belum tersedia"}</h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted">
-          Materi untuk konteks ini belum tersedia dan disetujui. Kami tidak menampilkan pertanyaan skrining atau arahan klinis.
-          Untuk mendapatkan bantuan, hubungi tenaga kesehatan atau fasilitas kesehatan terdekat.
-        </p>
+        {approvedGuide ? (
+          <>
+            <h2 className="font-bold">Panduan {selectedGroup?.title.toLowerCase()}</h2>
+            <p className="mt-2 whitespace-pre-line text-sm leading-relaxed">{approvedGuide.finalText}</p>
+            <div className="mt-4 border-t border-border pt-3 text-xs leading-relaxed text-muted">
+              <h3 className="font-semibold">Sumber dan persetujuan</h3>
+              <ul className="mt-1 list-inside list-disc">
+                {approvedGuide.references.map((reference, index) => (
+                  <li key={`${reference.title}-${index}`}>{reference.title}, {reference.edition}, {reference.date}, bagian {reference.section}.</li>
+                ))}
+              </ul>
+              <p className="mt-2">Ditinjau {approvedGuide.clinicalReviewerApproval.role} ({approvedGuide.clinicalReviewerApproval.reviewer}), {approvedGuide.clinicalReviewerApproval.date}.</p>
+              <p>Disetujui pemilik workspace ({approvedGuide.workspaceOwnerApproval.reviewer}), {approvedGuide.workspaceOwnerApproval.date}.</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="font-bold">{selectedGroup ? `Panduan ${selectedGroup.title.toLowerCase()} belum tersedia` : "Panduan belum tersedia"}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted">
+              Materi untuk konteks ini belum tersedia dan disetujui. Kami tidak menampilkan pertanyaan skrining atau arahan klinis.
+              Untuk mendapatkan bantuan, hubungi tenaga kesehatan atau fasilitas kesehatan terdekat.
+            </p>
+          </>
+        )}
         <p className="mt-3 border-t border-border pt-3 text-xs leading-relaxed text-muted">{disclaimer}</p>
       </section>
     </div>
