@@ -42,6 +42,7 @@ export function GrowthForm() {
     const child: SavedChild = existing ?? { id: crypto.randomUUID(), nickname: window.prompt("Nama panggilan anak (opsional)") ?? "", sex, birthDate, measurements: [] };
     const nextChild = { ...child, measurements: [...child.measurements.filter((item) => item.date !== measureDate), { id: crypto.randomUUID(), date: measureDate, weightKg: parseNumber(weight), heightCm: height.trim() ? parseNumber(height) : undefined, measurement }] };
     writeGrowthHistory(existing ? children.map((item) => item.id === child.id ? nextChild : item) : [...children, nextChild]);
+    window.dispatchEvent(new Event("growth-history-updated"));
     setSaved(true);
   }
 
