@@ -61,6 +61,14 @@ export function ProductAnalytics({
     lastPage.current = null;
   }, [consent, enabled, measurementId]);
 
+  useEffect(() => {
+    const trackEntryAdded = () => {
+      if (enabled && consent === "granted" && window.gtag) window.gtag("event", "mpasi_entri_ditambah");
+    };
+    window.addEventListener("mpasi-entry-added", trackEntryAdded);
+    return () => window.removeEventListener("mpasi-entry-added", trackEntryAdded);
+  }, [consent, enabled]);
+
   const sendPageView = useCallback(() => {
     if (!pathname || !window.gtag || lastPage.current === pathname) return;
     lastPage.current = pathname;
