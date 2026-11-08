@@ -33,10 +33,12 @@ export function GrowthChart({
   sex,
   ageMonths,
   items,
+  measurements = [],
 }: {
   sex: Sex;
   ageMonths: number;
   items: IndicatorResult[];
+  measurements?: { ageMonths: number; weightKg: number; heightCm?: number }[];
 }) {
   const heightResult = items.find((item) => item.key === "pb-u" || item.key === "tb-u");
   const [indicator, setIndicator] = useState<ChartIndicator>("bb-u");
@@ -55,6 +57,10 @@ export function GrowthChart({
   const values = Object.values(chartCurves).flat()
     .filter((point) => point.month <= maxMonth)
     .map((point) => point.value);
+  for (const point of measurements) {
+    const value = activeIndicator === "bb-u" ? point.weightKg : point.heightCm;
+    if (value !== undefined && point.ageMonths >= 0 && point.ageMonths <= maxMonth) values.push(value);
+  }
   if (measured) values.push(measured.value);
   const minValue = Math.floor(Math.min(...values) * 0.9 * 2) / 2;
   const maxValue = Math.ceil(Math.max(...values) * 1.05 * 2) / 2;
@@ -84,7 +90,7 @@ export function GrowthChart({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="font-bold">Kurva pertumbuhan WHO</h3>
-          <p className="mt-1 text-xs text-muted">Titik menunjukkan hasil pengukuran saat ini.</p>
+          <p className="mt-1 text-xs text-muted">Titik menunjukkan hasil pengukuran.</p>
         </div>
         {heightResult && (
           <div role="group" aria-label="Pilih kurva" className="flex rounded-full border border-border p-0.5 text-xs">
@@ -131,6 +137,10 @@ export function GrowthChart({
               <circle cx={x(ageMonths)} cy={y(measured.value)} r="6" fill="#d6336c" stroke="white" strokeWidth="2.5" />
             </g>
           )}
+          {measurements.filter((point) => point.ageMonths >= 0 && point.ageMonths <= maxMonth).map((point, index) => {
+            const value = activeIndicator === "bb-u" ? point.weightKg : point.heightCm;
+            return value !== undefined && value >= minValue && value <= maxValue ? <circle key={index} cx={x(point.ageMonths)} cy={y(value)} r="5" fill="#d6336c" stroke="white" strokeWidth="2" /> : null;
+          })}
           <text x={left} y={height - 1} fontSize="9" fill="currentColor" opacity="0.7">Usia (bulan)</text>
           <text x={width - right} y={height - 1} textAnchor="end" fontSize="9" fill="currentColor" opacity="0.7">{unit}</text>
         </svg>

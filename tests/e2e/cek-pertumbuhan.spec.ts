@@ -54,6 +54,20 @@ test("menolak tanggal lahir setelah tanggal pengukuran", async ({ page }) => {
   await expect(page.getByRole("alert").filter({ hasText: "Tanggal lahir tidak boleh" })).toBeVisible();
 });
 
+test("menyimpan pengukuran secara opt-in dan menampilkannya kembali setelah reload", async ({ page }) => {
+  await page.goto("/cek-pertumbuhan");
+  await page.getByLabel("Tanggal lahir").fill("2025-01-10");
+  await page.getByLabel("Tanggal pengukuran").fill("2026-01-10");
+  await page.getByLabel("Berat badan (kg)").fill("8.5");
+  await page.getByRole("button", { name: "Cek sekarang" }).click();
+  page.once("dialog", (dialog) => dialog.accept("Rani"));
+  await page.getByRole("button", { name: "Simpan ke riwayat di HP ini" }).click();
+  await expect(page.getByRole("heading", { name: "Rani" })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Rani" })).toBeVisible();
+  await expect(page.getByText("2026-01-10 · 8,5 kg")).toBeVisible();
+});
+
 test("health check", async ({ request }) => {
   const res = await request.get("/api/health");
   expect(res.ok()).toBeTruthy();
