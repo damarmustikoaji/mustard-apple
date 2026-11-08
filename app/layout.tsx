@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { ErrorLoggerInit } from "@/components/error-logger-init";
 import { ProductAnalytics } from "@/components/product-analytics";
+import { PwaRuntime } from "@/components/pwa-runtime";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({ variable: "--font-jakarta", subsets: ["latin"] });
@@ -16,6 +17,7 @@ const productAnalyticsEnabled =
 export const metadata: Metadata = {
   title: "Teman Buku Pink",
   description: "Panduan pendamping Buku KIA: cek pertumbuhan anak sesuai standar WHO, tanpa daftar dan tanpa menyimpan data.",
+  manifest: "/manifest.webmanifest",
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#d6336c" };
@@ -26,6 +28,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${jakarta.variable} font-sans antialiased`}>
         <ErrorLoggerInit />
         <ProductAnalytics enabled={productAnalyticsEnabled} measurementId={gaMeasurementId} />
+        <PwaRuntime />
         <div className="mx-auto flex min-h-dvh max-w-xl flex-col px-4">
           <header className="flex items-center justify-between py-4">
             <Link href="/" className="flex items-center gap-2 font-bold">
