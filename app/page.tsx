@@ -6,6 +6,7 @@ const features = [
   { title: "Cek Pertumbuhan", desc: "Berat dan tinggi anak sesuai usianya, berdasarkan standar WHO.", href: "/cek-pertumbuhan" },
   { title: "Cek Perkembangan", desc: "Kemampuan yang biasanya sudah dicapai anak di setiap usia.", href: "/cek-perkembangan" },
   { title: "Jadwal Imunisasi", desc: "Imunisasi apa saja dan kapan, dihitung dari tanggal lahir.", href: "/jadwal-imunisasi" },
+  { title: "Resep MPASI", desc: "Ide resep makanan pendamping ASI sesuai tahap usia anak.", href: "/mpasi" },
   ...(FEATURE_TANDA_BAHAYA
     ? [{ title: "Panduan tanda bahaya", desc: "Langkah mencari bantuan untuk kehamilan, nifas, dan bayi atau anak.", href: "/panduan-tanda-bahaya" }]
     : []),
