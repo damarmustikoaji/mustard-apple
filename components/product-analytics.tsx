@@ -97,7 +97,7 @@ export function ProductAnalytics({
       {consent === "unknown" ? (
         <aside
           aria-label="Persetujuan analitik"
-          className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-xl border border-border bg-white p-4 shadow-lg"
+          className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-xl border border-border bg-card p-4 shadow-lg shadow-black/10"
         >
           <p className="text-sm leading-relaxed text-foreground">
             Kami menggunakan Google Analytics untuk menghitung kunjungan situs secara agregat. Alamat halaman dan judul
