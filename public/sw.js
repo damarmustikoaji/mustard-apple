@@ -29,7 +29,10 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response.ok) void caches.open(CACHE_NAME).then((cache) => cache.put(request, response.clone()));
+          if (response.ok) {
+            const copy = response.clone();
+            void caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
+          }
           return response;
         })
         .catch(async () => (await caches.match(request)) || (await caches.match(url.pathname)) || (await caches.match("/"))),
@@ -40,10 +43,15 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/data/who/")) {
     event.respondWith(
       caches.match(request).then((cached) => {
-        const fresh = fetch(request).then((response) => {
-          if (response.ok) void caches.open(CACHE_NAME).then((cache) => cache.put(request, response.clone()));
-          return response;
-        });
+        const fresh = fetch(request)
+          .then((response) => {
+            if (response.ok) {
+              const copy = response.clone();
+              void caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
+            }
+            return response;
+          })
+          .catch(() => cached);
         return cached || fresh;
       }),
     );
